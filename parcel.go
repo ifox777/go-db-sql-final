@@ -13,7 +13,7 @@ func NewParcelStore(db *sql.DB) ParcelStore {
 	return ParcelStore{db: db}
 }
 
-func (s ParcelStore) Add(p Parcel) (int64, error) {
+func (s ParcelStore) Add(p Parcel) (int, error) {
 	// реализуйте добавление строки в таблицу parcel, используйте данные из переменной p
 	res, err := s.db.Exec("insert into parcel (number, client, status, address, created_at)"+
 		"values (:number, :client, :status, :address, :created_at)",
@@ -26,9 +26,14 @@ func (s ParcelStore) Add(p Parcel) (int64, error) {
 		log.Println(err)
 		return 0, err
 	}
+	id, err := res.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
 
 	// верните идентификатор последней добавленной записи
-	return res.LastInsertId()
+	return int(id), nil
 }
 
 func (s ParcelStore) Get(number int) (Parcel, error) {
@@ -39,6 +44,9 @@ func (s ParcelStore) Get(number int) (Parcel, error) {
 	p := Parcel{}
 	row := s.db.QueryRow("select * from parcel where number = $1", number)
 	err := row.Scan(&p.Number, &p.Client, &p.Status, &p.Address, &p.CreatedAt)
+	if err == sql.ErrNoRows {
+		return p, nil
+	}
 
 	return p, err
 }
@@ -63,6 +71,10 @@ func (s ParcelStore) GetByClient(client int) ([]Parcel, error) {
 		}
 		res = append(res, p)
 	}
+	if err := rows.Err(); err != nil {
+		log.Println(err)
+		return res, err
+	}
 
 	return res, nil
 }
@@ -81,9 +93,7 @@ func (s ParcelStore) SetStatus(number int, status string) error {
 func (s ParcelStore) SetAddress(number int, address string) error {
 	// реализуйте обновление адреса в таблице parcel
 	// менять адрес можно только если значение статуса registered
-	p := Parcel{}
-	row := s.db.QueryRow("select status from parcel where number = $1", number)
-	err := row.Scan(&p.Status)
+	p, err := s.Get(number)
 
 	if p.Status == ParcelStatusRegistered {
 		_, err := s.db.Exec("update parcel set address = $1 where number = $2", address, number)
@@ -102,10 +112,7 @@ func (s ParcelStore) SetAddress(number int, address string) error {
 func (s ParcelStore) Delete(number int) error {
 	// реализуйте удаление строки из таблицы parcel
 	// удалять строку можно только если значение статуса registered
-	p := Parcel{}
-	row := s.db.QueryRow("select status from parcel where number = $1", number)
-	err := row.Scan(&p.Status)
-
+	p, err := s.Get(number)
 	if p.Status == ParcelStatusRegistered {
 		_, err := s.db.Exec("delete from parcel where number = $1", number)
 		if err != nil {
