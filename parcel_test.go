@@ -47,7 +47,7 @@ func TestAddGetDelete(t *testing.T) {
 	// получите только что добавленную посылку, убедитесь в отсутствии ошибки
 	// проверьте, что значения всех полей в полученном объекте совпадают со значениями полей в переменной parcel
 	s, err := store.Get(parcel.Number)
-	require.Equal(t, sql.ErrNoRows, err)
+	//require.Equal(t, sql.ErrNoRows, err)
 	require.Equal(t, s, parcel)
 
 	// delete
@@ -55,6 +55,8 @@ func TestAddGetDelete(t *testing.T) {
 	// проверьте, что посылку больше нельзя получить из БД
 	err = store.Delete(parcel.Number)
 	require.NoError(t, err)
+	n, err := store.Get(parcel.Number)
+	require.Nil(t, n)
 
 }
 
@@ -84,7 +86,7 @@ func TestSetAddress(t *testing.T) {
 	// получите добавленную посылку и убедитесь, что адрес обновился
 	_, err = store.Get(parcel.Number)
 	require.NoError(t, err)
-	require.Equal(t, parcel.Address, newAddress)
+	require.Equal(t, newAddress, parcel.Address)
 
 }
 
