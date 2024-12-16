@@ -42,22 +42,23 @@ func TestAddGetDelete(t *testing.T) {
 	id, err := store.Add(parcel)
 	require.NoError(t, err)
 	require.NotEmptyf(t, id, "id н должен быть пустым")
-
+	parcel.Number = id
 	// get
 	// получите только что добавленную посылку, убедитесь в отсутствии ошибки
 	// проверьте, что значения всех полей в полученном объекте совпадают со значениями полей в переменной parcel
 	s, err := store.Get(parcel.Number)
 	//require.Equal(t, sql.ErrNoRows, err)
 	require.Equal(t, s, parcel)
+	require.NoError(t, err)
 
 	// delete
 	// удалите добавленную посылку, убедитесь в отсутствии ошибки
 	// проверьте, что посылку больше нельзя получить из БД
 	err = store.Delete(parcel.Number)
 	require.NoError(t, err)
-	n, err := store.Get(parcel.Number)
-	require.Nil(t, n)
-	require.Equal(t, sql.ErrNoRows, err)
+	_, err = store.Get(parcel.Number)
+
+	require.ErrorIs(t, err, sql.ErrNoRows)
 
 }
 
@@ -75,7 +76,7 @@ func TestSetAddress(t *testing.T) {
 	id, err := store.Add(parcel)
 	require.NoError(t, err)
 	require.NotEmptyf(t, id, "id н должен быть пустым")
-
+	parcel.Number = id
 	// set address
 	// обновите адрес, убедитесь в отсутствии ошибки
 	newAddress := "new test address"
@@ -85,9 +86,9 @@ func TestSetAddress(t *testing.T) {
 
 	// check
 	// получите добавленную посылку и убедитесь, что адрес обновился
-	_, err = store.Get(parcel.Number)
+	h, err := store.Get(parcel.Number)
 	require.NoError(t, err)
-	require.Equal(t, newAddress, parcel.Address)
+	require.Equal(t, newAddress, h.Address)
 
 }
 
@@ -107,7 +108,7 @@ func TestSetStatus(t *testing.T) {
 	require.NotEmptyf(t, id, "id н должен быть пустым")
 
 	// set status
-	// обновите статус, убедитесь в отсутствии ошибки
+	// обновите статус, убедитесь в отсутствии ошибки??
 	newstatus := ParcelStatusSent
 	err = store.SetStatus(parcel.Number, newstatus)
 	require.NoError(t, err)
