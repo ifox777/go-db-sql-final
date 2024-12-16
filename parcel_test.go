@@ -57,6 +57,7 @@ func TestAddGetDelete(t *testing.T) {
 	require.NoError(t, err)
 	n, err := store.Get(parcel.Number)
 	require.Nil(t, n)
+	require.Equal(t, sql.ErrNoRows, err)
 
 }
 
@@ -156,6 +157,8 @@ func TestGetByClient(t *testing.T) {
 	storedParcels, err := store.GetByClient(client) // получите список посылок по идентификатору клиента, сохранённого в переменной client
 	// убедитесь в отсутствии ошибки
 	// убедитесь, что количество полученных посылок совпадает с количеством добавленных
+	require.NoError(t, err)
+	require.Equal(t, len(parcels), len(storedParcels))
 
 	// check
 	for _, parcel := range storedParcels {
