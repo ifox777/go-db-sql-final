@@ -34,7 +34,7 @@ func (s ParcelStore) Add(p Parcel) (int, error)
 	// верните идентификатор последней добавленной записи
 	return int(id), nil
 }
-//fuf
+//fufkndlnvjd
 func (s ParcelStore) Get(number int) (Parcel, error) {
 	// реализуйте чтение строки по заданному number
 	// здесь из таблицы должна вернуться только одна строка
