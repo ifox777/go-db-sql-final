@@ -164,10 +164,6 @@ func main() {
 
 	// регистрация новой посылки
 	p, err = service.Register(client, address)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
 
 	// удаление новой посылки
 	err = service.Delete(p.Number)
