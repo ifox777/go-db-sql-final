@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"github.com/Yandex-Practicum/go-db-sql-final/.vscode"
 	"math/rand"
 	"testing"
 	"time"
@@ -34,7 +35,7 @@ func TestAddGetDelete(t *testing.T) {
 	db, err := sql.Open("sqlite", "tracker.db")
 	require.NoError(t, err)
 	defer db.Close()
-	store := NewParcelStore(db)
+	store := _vscode.NewParcelStore(db)
 	parcel := getTestParcel()
 
 	// add
@@ -68,7 +69,7 @@ func TestSetAddress(t *testing.T) {
 	db, err := sql.Open("sqlite", "tracker.db")
 	require.NoError(t, err)
 	defer db.Close()
-	store := NewParcelStore(db)
+	store := _vscode.NewParcelStore(db)
 	parcel := getTestParcel()
 
 	// add
@@ -98,7 +99,7 @@ func TestSetStatus(t *testing.T) {
 	db, err := sql.Open("sqlite", "tracker.db")
 	require.NoError(t, err)
 	defer db.Close()
-	store := NewParcelStore(db)
+	store := _vscode.NewParcelStore(db)
 	parcel := getTestParcel()
 
 	// add
@@ -127,7 +128,7 @@ func TestGetByClient(t *testing.T) {
 	db, err := sql.Open("sqlite", "tracker.db")
 	require.NoError(t, err)
 	defer db.Close()
-	store := NewParcelStore(db)
+	store := _vscode.NewParcelStore(db)
 
 	parcels := []Parcel{
 		getTestParcel(),

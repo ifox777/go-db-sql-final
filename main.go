@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	_ "database/sql"
 	"fmt"
+	"github.com/Yandex-Practicum/go-db-sql-final/.vscode"
 	"log"
 	"time"
 
@@ -25,10 +26,10 @@ type Parcel struct {
 }
 
 type ParcelService struct {
-	store ParcelStore
+	store _vscode.ParcelStore
 }
 
-func NewParcelService(store ParcelStore) ParcelService {
+func NewParcelService(store _vscode.ParcelStore) ParcelService {
 	return ParcelService{store: store}
 }
 
@@ -113,7 +114,7 @@ func main() {
 		}
 	}(db)
 
-	store := NewParcelStore(db) // создайте объект ParcelStore функцией NewParcelStore
+	store := _vscode.NewParcelStore(db) // создайте объект ParcelStore функцией NewParcelStore
 	service := NewParcelService(store)
 
 	// регистрация посылки

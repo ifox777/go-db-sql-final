@@ -1,7 +1,8 @@
-package main
+package _vscode
 
 import (
 	"database/sql"
+	"github.com/Yandex-Practicum/go-db-sql-final"
 	"log"
 )
 
@@ -13,7 +14,7 @@ func NewParcelStore(db *sql.DB) ParcelStore {
 	return ParcelStore{db: db}
 }
 
-func (s ParcelStore) Add(p Parcel) (int, error)
+func (s ParcelStore) Add(p main.Parcel) (int, error)
 	// реализуйте добавление строки в таблицу parcel, используйте данные из переменной p
 	res, err := s.db.Exec("insert into parcel (client, status, address, created_at)"+
 		"values (:client, :status, :address, :created_at)",
@@ -35,12 +36,12 @@ func (s ParcelStore) Add(p Parcel) (int, error)
 	return int(id), nil
 }
 //fufkndlnvjd
-func (s ParcelStore) Get(number int) (Parcel, error) {
+func (s ParcelStore) Get(number int) (main.Parcel, error) {
 	// реализуйте чтение строки по заданному number
 	// здесь из таблицы должна вернуться только одна строка
 
 	// заполните объект Parcel данными из таблицы
-	p := Parcel{}
+	p := main.Parcel{}
 	row := s.db.QueryRow("select * from parcel where number = $1", number)
 	err := row.Scan(&p.Number, &p.Client, &p.Status, &p.Address, &p.CreatedAt)
 	if err == sql.ErrNoRows {
@@ -50,12 +51,12 @@ func (s ParcelStore) Get(number int) (Parcel, error) {
 	return p, err
 }
 
-func (s ParcelStore) GetByClient(client int) ([]Parcel, error) {
+func (s ParcelStore) GetByClient(client int) ([]main.Parcel, error) {
 	// реализуйте чтение строк из таблицы parcel по заданному client
 	// здесь из таблицы может вернуться несколько строк
 
 	// заполните срез Parcel данными из таблицы
-	var res []Parcel
+	var res []main.Parcel
 
 	rows, err := s.db.Query("select * from parcel where client = $1", client)
 	if err != nil {
@@ -64,7 +65,7 @@ func (s ParcelStore) GetByClient(client int) ([]Parcel, error) {
 
 	defer rows.Close()
 	for rows.Next() {
-		p := Parcel{}
+		p := main.Parcel{}
 		err := rows.Scan(&p.Number, &p.Client, &p.Status, &p.Address, &p.CreatedAt)
 		if err != nil {
 			log.Println(err)
@@ -108,7 +109,7 @@ func (s ParcelStore) SetAddress(number int, address string) error {
 	//	log.Printf("При статусе  %s, обновление запрещено\n", p.Status)
 	//}
 	//return err
-	_, err := s.db.Exec("update parcel set address = $1 where number = $2 and status = $3", address, number, ParcelStatusRegistered)
+	_, err := s.db.Exec("update parcel set address = $1 where number = $2 and status = $3", address, number, main.ParcelStatusRegistered)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -129,7 +130,7 @@ func (s ParcelStore) Delete(number int) error {
 	//		return err
 	//	}
 
-	if _, err := s.db.Exec("delete from parcel where number = $1 and status = $2", number, ParcelStatusRegistered); err != nil {
+	if _, err := s.db.Exec("delete from parcel where number = $1 and status = $2", number, main.ParcelStatusRegistered); err != nil {
 		log.Println(err)
 		return err
 	}
